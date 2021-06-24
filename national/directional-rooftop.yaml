@@ -1,0 +1,54 @@
+overrides:
+    directional-rooftop-pv:
+        techs:
+            roof_mounted_pv_s_flat:
+                essentials:
+                    name: Roof mounted PV south-facing and flat
+                    parent: pv_on_roof
+                constraints:
+                    resource: file=capacityfactors-rooftop-pv-s-flat.csv
+                    resource_unit: energy_per_cap
+            roof_mounted_pv_n:
+                essentials:
+                    name: Roof mounted PV north-facing
+                    parent: pv_on_roof
+                constraints:
+                    resource: file=capacityfactors-rooftop-pv-n.csv
+                    resource_unit: energy_per_cap
+            roof_mounted_pv_e_w:
+                essentials:
+                    name: Roof mounted PV east-facing and west-facing
+                    parent: pv_on_roof
+                constraints:
+                    resource: file=capacityfactors-rooftop-pv-e-w.csv
+                    resource_unit: energy_per_cap
+        locations:
+            
+            IRL:
+                techs:
+                    roof_mounted_pv:
+                        exists: False
+                    roof_mounted_pv_s_flat:
+                        constraints:
+                            energy_cap_max: 0.14074912831229094 # (100,000 MW)
+                    roof_mounted_pv_n:
+                        constraints:
+                            energy_cap_max: 0.07677609310820555 # (100,000 MW)
+                    roof_mounted_pv_e_w:
+                        constraints:
+                            energy_cap_max: 0.14117167147744342 # (100,000 MW)
+            
+            GBR:
+                techs:
+                    roof_mounted_pv:
+                        exists: False
+                    roof_mounted_pv_s_flat:
+                        constraints:
+                            energy_cap_max: 1.4428331659013536 # (100,000 MW)
+                    roof_mounted_pv_n:
+                        constraints:
+                            energy_cap_max: 0.787039286233191 # (100,000 MW)
+                    roof_mounted_pv_e_w:
+                        constraints:
+                            energy_cap_max: 1.4471646974711563 # (100,000 MW)
+            

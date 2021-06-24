@@ -1,0 +1,45 @@
+import:
+    - '../interest-rate.yaml'
+    - '../renewable-techs.yaml'
+    - '../storage-techs.yaml'
+    - '../link-techs.yaml'
+    - '../demand-techs.yaml'
+    - 'locations.yaml'
+    - 'directional-rooftop.yaml'
+    - 'link-all-neighbours.yaml'
+model:
+    name: 'Example model'
+    calliope_version: 0.6.7
+    timeseries_data_path: '.'
+    subset_time: 2016
+    time:
+        function: resample
+        function_options.resolution: 3H
+run:
+    solver: gurobi
+    solver_io: python
+    mode: plan
+    objective_options: {
+        'cost_class': {'monetary': 1},
+        'sense': 'minimize'
+    }
+    
+overrides:
+    dispatch:
+        run.mode: operate
+        run.cyclic_storage: false
+        run.operation: 
+            window: 72
+            horizon: 168
+    load-shedding:
+        techs:
+            load_shedding:
+                essentials:
+                    name: Load shedding
+                    parent: supply
+                    carrier: electricity
+                constraints.energy_cap_equals: 1
+                costs.monetary.om_prod: 0.08  # (10,000 EUR2013/MW)
+        locations:
+            IRL.techs.load_shedding:
+            GBR.techs.load_shedding:

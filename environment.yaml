@@ -1,0 +1,15 @@
+name: euro-calliope
+channels:
+    - conda-forge
+    - gurobi
+dependencies:
+    - python=3.7
+    - gurobi=9.1.2
+    - ipykernel
+    - coincbc
+    - pip
+    - matplotlib
+    - seaborn
+    - pyutilib=5.8.0
+    - pip:
+        - git+https://github.com/calliope-project/calliope.git@v0.6.7-dev

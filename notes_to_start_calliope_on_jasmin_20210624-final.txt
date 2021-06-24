@@ -1,0 +1,122 @@
+Notes to set up and run Calliope (a cut down GB-IE version of euro-calliope provided by Bryn Pickering) on Jasmin
+24th June 2021
+Prepared by David Brayshaw, d.j.brayshaw@reading.ac.uk
+
+***
+
+First... log in to jasmin, ssh in to a science machine (e.g. sci3).
+
+Two options/methods available.  Recommend use "Bryn's method" (uses conda), alternative included for reference.
+
+Note: this should work with any of the following models.
+
+	euro-calliope-uk_irl_original-from-bryn --- original 2-zone GB-IE model from Bryn
+	euro-calliope-uk_irl_trimmed-from-bryn --- slightly modified  2-zone GB-IE model from Bryn (almost identical)
+	euro-calliope-uk_irl_simplified-final --- simplfied 2-zone model (only one PV and one WIND technology in each zone)
+
+Note: Gurobi was a commercial solver for which an academic license was provided for the hackathon.  If not available any more, try usign coincbc/cbc.
+
+
+
+
+*** BRYN'S METHOD ***
+
+Allows calliope to be run from command line OR from python notebook
+
+NB: if you've tried this before and want to 'restart' the process, then first try uninstall using:
+
+	conda deactivate
+	conda env remove -n euro-calliope
+
+
+Now, install (only needs to be done once)... note that a copy of euro-calliope-uk_irl should be stored on the hackathon group 7 github.
+
+
+	module load jaspy/3.7
+	cp /gws/smf/j04/cop26_hackathons/oxford/group_2/euro-calliope-uk_irl/environment.yaml ~/environment.yaml
+	conda env create -f ~/environment.yaml
+	mkdir ~/outputs
+
+Set up the evironment for the model (needs to be done each time you load a new ssh shell):
+
+	conda activate euro-calliope
+	cd /gws/smf/j04/cop26_hackathons/oxford/gurobi
+	source setup-gurobi.sh
+	
+Run the model on the command line
+
+	calliope run ~/test_model/national/example-model.yaml --save_netcdf=~/outputs/mytest.nc
+
+
+Or, to use through python notebook:
+
+	Link your conda env to jupyterlab: `conda run -n euro-calliope python -m ipykernel install --user --name euro-calliope`
+	copy the example notebook to your local directory: `cp /gws/smf/j04/cop26_hackathons/oxford/group_2/euro-calliope-uk_irl/example-notebook.ipynb ~/example-notebook.ipynb`
+	spin up jupyterlab at `notebooks.jasmin.ac.uk` and open the example notebook.
+	Set the kernel to `euro-calliope` (click on the top-right of the notebook, where it might say 'no kernel!' or 'Python 3 + Jaspy')
+
+
+It is recommended that you take a copy of the model (i.e., the euro-calliope-uk_irl directory) and put it in your home directory for editing.  Note that, if you do this, you may need to edit the 'inputdir' variable in the first code block in the notebook file to point to the new location.
+
+
+
+
+
+
+*** ALTERNATIVE METHOD ***
+
+Activate gurobi solver (as per Ag Stephen's email, 17/6/21)
+	cd /gws/smf/j04/cop26_hackathons/oxford/gurobi/
+	source setup-gurobi.sh
+
+Test gurobi works using
+	gurobi_cl /gws/smf/j04/cop26_hackathons/oxford/gurobi/gurobi912/linux64/examples/data/coins.lp
+
+Setup jaspy and a python 3 virtual environment, install calliope
+	module load jaspy/3.7
+	python -m venv ~/my-workshop-venv --system-site-packages
+	source ~/my-workshop-venv/bin/activate
+	pip install calliope
+
+Edit and run the national_scale tutorial 1 provided with calliope distribution to use gurobi
+	cd ~/my-workshop-venv/lib/python3.7/site-packages/calliope/example_models/
+	cp -R national_scale national_scale_tmp
+	cd national_scale_tmp
+	<< EDIT model.yaml to use gurobi (solver: cbc  solver: gurobi) >>
+	calliope run model.yaml --save_csv=djbtmp
+	<< Model output appears in subdirectory djbtmp >>
+
+Short version for subsequent runs (NB: need to cd to gurobi and source from directory, not “source /gws/smf…/gurobi” from another directory)
+	cd /gws/smf/j04/cop26_hackathons/oxford/gurobi
+	source setup-gurobi.sh
+	module load jaspy/3.7
+	source ~/my-workshop-venv/bin/activate
+	cd ~/my-workshop-venv/lib/python3.7/site-packages/calliope/example_models/national_scale_tmp
+	calliope run model.yaml --save_csv=djbtmp
+
+
+Running Bryn's GB-Ireland euro-calliope
+	Copy Bryn;s model to your home directory: cp -R /gws/smf/j04/cop26_hackathons/oxford/group_2/euro-calliope-uk_irl/ ~/my_euro-calliope-uk_irl
+	Make output directory: mkdir ~/outputs
+	<< EDIT ~/my_euro-calliope-uk_irl/national/example_model.yaml (delete the line 'solver_io: python' and save) >>
+
+Do all the usual initialisation/set-up/load environments etc
+	cd /gws/smf/j04/cop26_hackathons/oxford/gurobi
+	source setup-gurobi.sh
+	module load jaspy/3.7
+	source ~/my-workshop-venv/bin/activate
+	Run calliope: calliope run ~/my_euro-calliope-uk_irl/national/example-model.yaml --save_netcdf=~/outputs/my_output.nc
+
+	NB: if you get a license error, then try deleting 'solver_io: python' from the example-model.yaml file and trying again
+
+
+
+Useful sources of info
+https://github.com/cedadev/jasmin-workshop/tree/master/exercises/ex07 
+https://help.jasmin.ac.uk/article/4918-jasmin-software-faqs
+https://help.jasmin.ac.uk/article/4489-python-virtual-environments
+https://calliope.readthedocs.io/en/stable/user/installation.html
+https://calliope.readthedocs.io/en/stable/user/tutorials_01_national.html
+https://pypi.org/project/calliope/
+
+
